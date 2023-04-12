@@ -13,10 +13,11 @@ public class GameManagerX : MonoBehaviour
     public GameObject titleScreen;
     public Button restartButton; 
 
+
     public List<GameObject> targetPrefabs;
 
     private int score;
-    private float timer;
+    private float timeLeft;
     private float spawnRate = 1.5f;
     public bool isGameActive;
 
@@ -27,24 +28,25 @@ public class GameManagerX : MonoBehaviour
     // Start the game, remove title screen, reset score, and adjust spawnRate based on difficulty button clicked
     public void StartGame(int difficulty)
     {
-        spawnRate /= 5;
+        spawnRate /= difficulty;
         isGameActive = true;
         StartCoroutine(SpawnTarget());
         score = 0;
-        timer = 60;
         UpdateScore(0);
         titleScreen.SetActive(false);
-    }
-    void Update()
-    {
 
-        if(isGameActive == true)
+        timeLeft = 60;
+    }
+    private void Update()
+    {
+        if(isGameActive)
         {
-            CountdownTimer();
-        }
-        if (timer < 0)
-        {
-            GameOver();
+            timeLeft -= Time.deltaTime;
+            timerText.SetText("Time: " + Mathf.Round(timeLeft));
+            if(timeLeft < 0)
+            {
+                GameOver();
+            }
         }
     }
 
@@ -85,13 +87,7 @@ public class GameManagerX : MonoBehaviour
     public void UpdateScore(int scoreToAdd)
     {
         score += scoreToAdd;
-        scoreText.text = "score" + score;
-    }
-
-    public void CountdownTimer()
-    {
-        timer -= Time.deltaTime;
-        timerCountdown.text = "Timer" + Mathf.Found(timer);
+        scoreText.text = "score " + score;
     }
 
     // Stop game, bring up game over text and restart button
@@ -107,4 +103,5 @@ public class GameManagerX : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
 }
