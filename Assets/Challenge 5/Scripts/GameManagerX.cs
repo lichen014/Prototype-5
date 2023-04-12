@@ -16,8 +16,7 @@ public class GameManagerX : MonoBehaviour
     public List<GameObject> targetPrefabs;
 
     private int score;
-    public int timeOfRound = 60;
-    private int secondsToEnd;
+    private float timer;
     private float spawnRate = 1.5f;
     public bool isGameActive;
 
@@ -30,11 +29,23 @@ public class GameManagerX : MonoBehaviour
     {
         spawnRate /= 5;
         isGameActive = true;
+        StartCoroutine(SpawnTarget());
         score = 0;
+        timer = 60;
         UpdateScore(0);
         titleScreen.SetActive(false);
-        secondsToEnd = timeOfRound;
-        StartCoroutine(Timer());
+    }
+    void Update()
+    {
+
+        if(isGameActive == true)
+        {
+            CountdownTimer();
+        }
+        if (timer < 0)
+        {
+            GameOver();
+        }
     }
 
     // While game is active spawn a random target
@@ -77,6 +88,12 @@ public class GameManagerX : MonoBehaviour
         scoreText.text = "score" + score;
     }
 
+    public void CountdownTimer()
+    {
+        timer -= Time.deltaTime;
+        timerCountdown.text = "Timer" + Mathf.Found(timer);
+    }
+
     // Stop game, bring up game over text and restart button
     public void GameOver()
     {
@@ -90,23 +107,4 @@ public class GameManagerX : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
-
-    public void StartGame(int difficulty)
-    {
-        isGameActive = true;
-        score = 0;
-        spawnRate /= difficulty;
-
-        StartCoroutine(SpawnTarget());
-        UpdateScore(0);
-
-        titleScreen.gameObject.SetActive(false);
-    }
-
-
-    public void UpdateTimer()
-    {
-        timerText.text = $"Time: {secondsToEnd}";
-    }
-    
 }
